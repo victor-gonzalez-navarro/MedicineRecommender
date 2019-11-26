@@ -3,7 +3,7 @@ import pandas as pd
 import pickle
 from Source.case_base import CaseBase
 from tqdm import tqdm
-
+from sklearn.metrics import accuracy_score
 
 # ----------------------------------------------------------------------------------------------------------------------
 # PARAMETERS
@@ -138,13 +138,17 @@ def run(cb, new_case, num_attrib_solution):
 def run_tests(cb, data_test):
     # Distances between returned songs and target
     print("---TESTING---")
+    true_table = data_test.values
+    solution_table = np.empty([len(data_test), NUM_ATTRIB_SOLUTION], dtype=str)
+    accuracy = 0
     for idx in tqdm(range(len(data_test))):
         data = data_test.iloc[idx].values[:-NUM_ATTRIB_SOLUTION]
         solution = run(cb, data, NUM_ATTRIB_SOLUTION)
-        # print(data)
-        # print(solution)
-        # print("------------------------------------------------------------------------------")
+        accuracy = accuracy + accuracy_score(data_test.iloc[idx].values[-NUM_ATTRIB_SOLUTION:], np.array(solution))
+        solution_table[idx, :] = solution
 
+    accuracy = accuracy / len(data_test)
+    print("The accuracy over the testing set is " + str(accuracy))
     print("Do not use MODE because will be None")
 
 
